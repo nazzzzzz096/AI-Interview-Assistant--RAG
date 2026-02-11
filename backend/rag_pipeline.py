@@ -11,6 +11,7 @@ Returns:
     - Retriever
 """
 
+import os
 import logging
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
@@ -22,6 +23,10 @@ from langchain_core.runnables import RunnablePassthrough
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INDEX_PATH = os.path.join(BASE_DIR, "faiss_index")
 
 
 def get_rag_chain():
@@ -40,7 +45,7 @@ def get_rag_chain():
         logging.info("Loading FAISS index...")
 
         vectorstore = FAISS.load_local(
-            "faiss_index", embeddings, allow_dangerous_deserialization=True
+            INDEX_PATH, embeddings, allow_dangerous_deserialization=True
         )
 
         retriever = vectorstore.as_retriever(search_kwargs={"k": 7})

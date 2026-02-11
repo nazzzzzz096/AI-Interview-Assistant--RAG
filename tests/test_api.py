@@ -1,8 +1,5 @@
 """
 API Test Suite
-
-Contains unit tests for health endpoint and chat response schema.
-Ensures API returns correct structure and status codes.
 """
 
 from fastapi.testclient import TestClient
@@ -27,33 +24,31 @@ def dummy_retrieve(self, _):
     return [DummyDoc()]
 
 
-client = TestClient(app)
-
-
 def test_health():
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
+    with TestClient(app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json() == {"status": "healthy"}
 
 
 def test_chat_schema():
+    with TestClient(app) as client:
 
-    # Inject mock BEFORE request
-    app.state.rag_chain = type("MockChain", (), {"invoke": dummy_invoke})()
+        # Inject mock BEFORE request
+        app.state.rag_chain = type("MockChain", (), {"invoke": dummy_invoke})()
 
-    app.state.retriever = type("MockRetriever", (), {"invoke": dummy_retrieve})()
+        app.state.retriever = type("MockRetriever", (), {"invoke": dummy_retrieve})()
 
-    response = client.post(
-        "/chat",
-        json={"question": "Test question"},
-    )
-    print(response.json())
+        response = client.post(
+            "/chat",
+            json={"question": "Test question"},
+        )
 
-    assert response.status_code == 200
+        assert response.status_code == 200
 
-    data = response.json()
+        data = response.json()
 
-    assert "answer" in data
-    assert "sources" in data
-    assert isinstance(data["sources"], list)
-    assert data["answer"] == "Mocked answer"
+        assert "answer" in data
+        assert "sources" in data
+        assert isinstance(data["sources"], list)
+        assert data["answer"] == "Mocked answer"

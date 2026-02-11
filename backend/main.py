@@ -12,14 +12,14 @@ This service exposes the AI Interview Assistant API.
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
-from rag_pipeline import get_rag_chain
+from backend.rag_pipeline import get_rag_chain
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import JSONResponse
 from slowapi.middleware import SlowAPIMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
-from monitoring import (
+from backend.monitoring import (
     rag_requests,
     rag_errors,
     rag_latency,
