@@ -18,6 +18,13 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import JSONResponse
 from slowapi.middleware import SlowAPIMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
+from monitoring import (
+    rag_requests,
+    rag_errors,
+    rag_latency,
+    rag_processed_docs,
+)
 
 # ---------------------------
 # Lifespan (Startup / Shutdown)
@@ -35,6 +42,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ---------------------------
+# Prometheus Metrics
+# ---------------------------
+
+Instrumentator().instrument(app).expose(app)
 
 # ---------------------------
 # Rate Limiter Setup
@@ -88,22 +100,29 @@ def chat(request: Request, body: ChatRequest):
     and generating responses using Gemini.
     """
 
-    try:
-        rag_chain = app.state.rag_chain
-        retriever = app.state.retriever
+    rag_requests.inc()
 
-        response = rag_chain.invoke(body.question)
-        docs = retriever.invoke(body.question)
+    with rag_latency.time():
+        try:
+            rag_chain = app.state.rag_chain
+            retriever = app.state.retriever
 
-        sources = list(set(doc.metadata.get("source", "Unknown") for doc in docs))
+            response = rag_chain.invoke(body.question)
+            docs = retriever.invoke(body.question)
 
-        return {
-            "answer": response.content,
-            "sources": sources,
-        }
+            rag_processed_docs.inc(len(docs))
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error processing request: {str(e)}",
-        )
+            sources = list(set(doc.metadata.get("source", "Unknown") for doc in docs))
+
+            return {
+                "answer": response.content,
+                "sources": sources,
+            }
+
+        except Exception as e:
+            rag_errors.inc()
+
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error processing request: {str(e)}",
+            )

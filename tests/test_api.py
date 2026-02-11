@@ -6,7 +6,7 @@ Ensures API returns correct structure and status codes.
 """
 
 from fastapi.testclient import TestClient
-from main import app
+from backend.main import app
 
 
 class DummyResponse:

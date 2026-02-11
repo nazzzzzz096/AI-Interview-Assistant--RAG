@@ -1,4 +1,4 @@
-from rag_pipeline import get_rag_chain
+from backend.rag_pipeline import get_rag_chain
 
 chain, retriever = get_rag_chain()
 

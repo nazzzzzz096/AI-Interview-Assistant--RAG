@@ -20,8 +20,12 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 
-DATA_PATH = "data"
-INDEX_PATH = "faiss_index"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DATA_PATH = os.getenv("DATA_PATH", os.path.join(BASE_DIR, "..", "data"))
+
+INDEX_PATH = os.getenv("INDEX_PATH", os.path.join(BASE_DIR, "faiss_index"))
 
 
 def load_documents():
