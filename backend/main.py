@@ -33,6 +33,7 @@ from backend.monitoring import (
 
 import os
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
