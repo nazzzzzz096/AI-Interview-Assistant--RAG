@@ -28,6 +28,10 @@ jobs:
         
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      
+    - name: Set test environment
+      run: echo "TEST_MODE=true" >> $GITHUB_ENV
+
 
     - name: Check formatting (Black)
       run: |

@@ -31,9 +31,18 @@ from backend.monitoring import (
 # ---------------------------
 
 
+import os
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.rag_chain, app.state.retriever = get_rag_chain()
+
+    if os.getenv("TEST_MODE") == "true":
+        # Skip real RAG loading in tests
+        app.state.rag_chain = None
+        app.state.retriever = None
+    else:
+        app.state.rag_chain, app.state.retriever = get_rag_chain()
+
     yield
 
 
