@@ -1,23 +1,4 @@
-# AI-Interview-Assistant--RAG
-Perfect.
-You now need a **professional, production-level README** — something that makes recruiters immediately understand:
 
-* Architecture
-* RAG flow
-* Deployment
-* DevOps setup
-* Monitoring
-* CI/CD
-* Testing
-* Docker
-
-Below is a complete, clean, recruiter-ready README you can copy.
-
----
-
-# 📄 README.md
-
----
 
 # 🤖 AI Interview Assistant (RAG-based System)
 
